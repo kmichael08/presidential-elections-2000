@@ -11,11 +11,12 @@
       function drawChart() {
 
         var data = google.visualization.arrayToDataTable(
-            {{ lista|safe }}
+            {{ diagram|safe }}
         );
 
         var options = {
-          title: 'Wyniki wyborów'
+          title: 'Wyniki wyborów',
+          sliceVisibilityThreshold: .0
         };
 
         var chart = new google.visualization.PieChart(document.getElementById('piechart'));
