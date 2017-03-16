@@ -1,6 +1,8 @@
 from jinja2 import FileSystemLoader, Environment
 from xlrd import open_workbook
 from collections import OrderedDict
+from json import dumps
+
 
 templateLoader = FileSystemLoader( searchpath="templates" )
 
@@ -38,7 +40,13 @@ def generuj_gminy():
 
         ogolne = OrderedDict(zip(rubryki, wartosci))
 
-        outputText = template.render({'res_dict' : res_dict, 'gmina' : gmina, 'powiat' : powiat, 'ogolne' : ogolne})
+        lista = [['Kandydat', 'Głosy']]
+
+        for kandydat, glosy in zip(candidates, votes):
+            lista.append([kandydat, glosy])
+
+
+        outputText = template.render({'res_dict' : res_dict, 'gmina' : gmina, 'powiat' : powiat, 'ogolne' : ogolne, 'lista' : dumps(lista)})
 
 
         with open('pages/gminy/' + FILE, 'w') as page:
