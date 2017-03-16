@@ -1,10 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>$Title$</title>
+    <title> Wybory prezydenckie 2000 </title>
 </head>
 <body>
-$END$
+    <div>
+        <h1> Powiat {{powiat}}, Gmina {{ gmina }} </h1>
+    </div>
+
+
+    <div>
+        <h2>
+            Kandydaci na prezydenta
+        </h2>
+        <ul>
+            {% for cand, votes in res_dict.items() %}
+                <li> {{ cand }}  {{ votes }}</li>
+            {% endfor %}
+        </ul>
+
+    </div>
+
+    <div>
+        <h2> Ogólne statystyki </h2>
+        <ul>
+            {% for rubryka, wartosc in ogolne.items() %}
+                <li> {{ rubryka }} {{ wartosc }} </li>
+            {% endfor %}
+        </ul>
+    </div>
+
 </body>
 </html>
