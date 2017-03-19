@@ -58,5 +58,13 @@
         </ul>
     </div>
 
+    <div>
+        <ul>
+            {% for name, obj in subunits.items() %}
+                <li> <a href = {{ root + obj.destination }}> {{ name }} </a> </li>
+            {% endfor %}
+        </ul>
+    </div>
+
 </body>
 </html>

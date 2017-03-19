@@ -1,0 +1,9 @@
+TODO:
+- push to the repo
+- amend the statistics
+- navigation menu (add parent field, rectify the names of units)
+- diagrams
+- order in templates
+- style, css
+- map
+- selenium testing script

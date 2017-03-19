@@ -11,6 +11,8 @@ env = Environment( loader=templateLoader )
 
 TEMPLATE_FILE = "gmina.html"
 
+ROOT_PATH = '/home/michal/PycharmProjects/wybory_prezydenckie/'
+
 template = env.get_template( TEMPLATE_FILE )
 
 sheet = open_workbook('dane/gm-kraj.xls').sheet_by_index(0)
@@ -28,6 +30,7 @@ class Unit:
         self.name = name
         self.typ = typ
         self.destination = 'pages/' + self.typ + '/' + str(self.name) + '.html'
+        self.statystyki = [0] * 6
 
     """ Create (if not existing yet) the subunit and add to the list and return it. """
     def add_subunit(self, name, typ):
@@ -40,6 +43,8 @@ class Unit:
         for sub in self.subunits.values():
             for i in range(len(sub.votes)):
                 self.votes[i] += sub.votes[i]
+            for i in range(5):
+                self.statystyki[i] += sub.statystyki[i]
 
     """ Generate the page for this unit. """
     def generate(self):
@@ -48,7 +53,10 @@ class Unit:
             sub.generate()
         self.update()
         self.res_dict = OrderedDict(zip(candidates, self.votes))
-        outputText = template.render({'res_dict' : self.res_dict, 'ogolne' : self.ogolne})
+        print(self.statystyki[0], self.statystyki[1])
+        self.statystyki[5] = 100 * self.statystyki[1] / self.statystyki[0]
+        self.ogolne = OrderedDict(zip(rubryki, self.statystyki))
+        outputText = template.render({'res_dict' : self.res_dict, 'ogolne' : self.ogolne, 'subunits' : self.subunits, 'root' : ROOT_PATH })
         with open(self.destination, 'w') as page:
             page.write(outputText)
 
@@ -98,6 +106,9 @@ def generuj_obwody():
             gmina = sheet_obwod.cell(obw, 2).value
             obw_obj = gminy_dict[gmina].add_subunit(name, 'obwod')
             obw_obj.votes = [int(sheet_obwod.cell(obw, i).value) for i in range(12, 24)]
+            obw_obj.statystyki = [int(sheet_obwod.cell(obw,i).value) for i in range(7, 12)]
+            toll = 100 * obw_obj.statystyki[1] / obw_obj.statystyki[0]
+            obw_obj.statystyki.append(toll)
 
 
 
