@@ -13,8 +13,6 @@ TEMPLATE_FILE = "gmina.html"
 
 template = env.get_template( TEMPLATE_FILE )
 
-# outputText = template.render( templateVars )
-
 sheet = open_workbook('dane/gm-kraj.xls').sheet_by_index(0)
 
 candidates = [sheet.cell(0, i).value for i in range(10, 22)]
@@ -25,40 +23,49 @@ class Unit:
 
     def __init__(self, name, typ):
         self.subunits = OrderedDict()
-        self.votes = []
+        self.votes = [0] * CANDIDATES_NUM
         self.ogolne = OrderedDict()
         self.name = name
         self.typ = typ
-        self.destination = 'pages/' + self.typ + '/' + str(self.name)
+        self.destination = 'pages/' + self.typ + '/' + str(self.name) + '.html'
 
+    """ Create (if not existing yet) the subunit and add to the list and return it. """
     def add_subunit(self, name, typ):
         if name not in self.subunits:
             self.subunits[name] = Unit(name, typ)
         return self.subunits[name]
 
-    # calculate based on the lowest
+    """ Calculate values based on subunits. """
     def update(self):
-        pass
+        for sub in self.subunits.values():
+            for i in range(len(sub.votes)):
+                self.votes[i] += sub.votes[i]
 
+    """ Generate the page for this unit. """
     def generate(self):
+        print(self.destination)
+        for sub in self.subunits.values():
+            sub.generate()
+        self.update()
         self.res_dict = OrderedDict(zip(candidates, self.votes))
         outputText = template.render({'res_dict' : self.res_dict, 'ogolne' : self.ogolne})
         with open(self.destination, 'w') as page:
             page.write(outputText)
 
 
-
 polska = Unit('Polska', 'kraj')
 okregi_dict = OrderedDict()
 gminy_dict = OrderedDict()
 
+
+""" Add the row from the sheet with units. """
 def add_row(row):
     okr_num = int(row[0].value)
     gmina = row[2].value
     powiat = row[3].value
     gminy_dict[gmina] = okregi_dict[okr_num].add_subunit(powiat, 'powiat').add_subunit(gmina, 'gmina')
 
-
+""" Generate the tree of all units. """
 def make_tree():
     with open('dane/wojewodztwa.json', 'r') as woj:
         woj_dict = load(woj)
@@ -72,21 +79,16 @@ def make_tree():
     for row in list(sheet.get_rows())[1:]:
         add_row(row)
 
-
+""" Print the tree of units. """
 def dfs_print(unit):
     print(unit.destination, unit.name)
     for sub in unit.subunits.values():
         dfs_print(sub)
 
 
-def generate_page(unit):
-    for sub in unit.subunits:
-        sub.update()
-    sub.generate()
-
-
 LICZBA_OKREGOW = 68
 
+""" Generate directly pages for obwody. """
 #TODO typy w xls, pilnować nrows + 1?
 def generuj_obwody():
     for num in range(1, LICZBA_OKREGOW + 1):
@@ -99,12 +101,7 @@ def generuj_obwody():
 
 
 
-
-
-
 if __name__ == "__main__":
-    #generuj_gminy()
-    #generuj_powiaty()
     make_tree()
     generuj_obwody()
-    dfs_print(polska)
+    polska.generate()
