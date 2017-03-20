@@ -28,7 +28,7 @@
 </head>
 <body>
     <div>
-        <h1> Powiat {{powiat}}, Gmina {{ gmina }} </h1>
+        <h1> {{ description }} </h1>
     </div>
 
 
@@ -64,8 +64,8 @@
 
     <div>
         <ul>
-            {% for name, obj in subunits.items() %}
-                <li> <a href = {{ root + obj.destination }}> {{ name }} </a> </li>
+            {% for name in subnames %}
+                <li> <a href = {{ root + subunits[name].destination }} > {{ subunits[name].full_type }} {{ subunits[name].full_name }} </a> </li>
             {% endfor %}
         </ul>
     </div>

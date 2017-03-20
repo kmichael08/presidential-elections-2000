@@ -2,6 +2,7 @@ from jinja2 import FileSystemLoader, Environment
 from xlrd import open_workbook
 from collections import OrderedDict
 from json import dumps, load
+import re
 
 CANDIDATES_NUM = 12
 
@@ -11,7 +12,7 @@ env = Environment( loader=templateLoader )
 
 TEMPLATE_FILE = "gmina.html"
 
-ROOT_PATH = '/home/michal/PycharmProjects/wybory_prezydenckie/'
+ROOT_PATH = '../../'
 
 template = env.get_template( TEMPLATE_FILE )
 
@@ -23,19 +24,31 @@ rubryki = ['Uprawnieni do głosowania', 'Wydane karty', 'Wyjęto z urny', 'Niewa
 
 class Unit:
 
-    def __init__(self, name, typ):
+    def __init__(self, name, typ, full_type = None, full_name = None):
         self.subunits = OrderedDict()
         self.votes = [0] * CANDIDATES_NUM
         self.ogolne = OrderedDict()
         self.name = name
         self.typ = typ
-        self.destination = 'pages/' + self.typ + '/' + str(self.name) + '.html'
+
+        if full_type == None:
+            self.full_type = typ
+        else:
+            self.full_type = full_type
+
+        if full_name == None:
+            self.full_name = name
+        else:
+            self.full_name = full_name
+
+        self.destination = 'pages/' + self.typ + '/' + re.sub(r' ', '_', str(self.name)) + '.html'
         self.statystyki = [0] * 6
+        self.diagram = [['Kandydat', 'Głosy']]
 
     """ Create (if not existing yet) the subunit and add to the list and return it. """
-    def add_subunit(self, name, typ):
+    def add_subunit(self, name, typ, full_type=None, full_name=None):
         if name not in self.subunits:
-            self.subunits[name] = Unit(name, typ)
+            self.subunits[name] = Unit(name, typ, full_type, full_name)
         return self.subunits[name]
 
     """ Calculate values based on subunits. """
@@ -48,18 +61,21 @@ class Unit:
 
     """ Generate the page for this unit. """
     def generate(self):
-        #print(self.destination)
         for sub in self.subunits.values():
             sub.generate()
         if self.typ not in ['gmina', 'obwod']:
             self.update()
         self.res_dict = OrderedDict(zip(candidates, self.votes))
-        if self.statystyki[0] == 0:
-            print(self.destination)
-            print(self.statystyki)
+
+        for cand, support in self.res_dict.items():
+            self.diagram.append([cand, support])
+
         self.statystyki[5] = 100 * self.statystyki[1] / self.statystyki[0]
         self.ogolne = OrderedDict(zip(rubryki, self.statystyki))
-        outputText = template.render({'res_dict' : self.res_dict, 'ogolne' : self.ogolne, 'subunits' : self.subunits, 'root' : ROOT_PATH })
+
+        outputText = template.render({'res_dict' : self.res_dict, 'ogolne' : self.ogolne, 'subunits' : self.subunits, 'subnames' : sorted(self.subunits.keys()),
+                                      'root' : ROOT_PATH, 'diagram' : self.diagram, 'description' : str(self.full_type) + ' ' + str(self.full_name) })
+
         with open(self.destination, 'w') as page:
             page.write(outputText)
 
@@ -73,8 +89,9 @@ gminy_dict = OrderedDict()
 def add_row(row):
     okr_num = int(row[0].value)
     gmina = str(row[0].value) + str(row[1].value)
+    gmina_name = row[2].value
     powiat = row[3].value
-    gminy_dict[gmina] = okregi_dict[okr_num].add_subunit(powiat, 'powiat').add_subunit(gmina, 'gmina')
+    gminy_dict[gmina] = okregi_dict[okr_num].add_subunit(powiat, 'powiat').add_subunit(gmina, 'gmina', full_name=gmina_name)
 
 """ Generate the tree of all units. """
 def make_tree():
@@ -82,9 +99,9 @@ def make_tree():
         woj_dict = load(woj)
 
     for woj, okregi in woj_dict.items():
-        wojewodztwo = polska.add_subunit(woj, 'woj')
+        wojewodztwo = polska.add_subunit(woj, 'woj', full_type='województwo')
         for okreg in okregi:
-            okr_obj = wojewodztwo.add_subunit(okreg, 'okr')
+            okr_obj = wojewodztwo.add_subunit(okreg, 'okr', full_type='okręg')
             okregi_dict[okreg] = okr_obj
 
     for row in list(sheet.get_rows())[1:]:
@@ -107,7 +124,8 @@ def generuj_obwody_i_gminy():
         for obw in range(1, sheet_obwod.nrows):
             name = str(sheet_obwod.cell(obw, 1).value) + str(int(sheet_obwod.cell(obw, 4).value))
             gmina = str(sheet_obwod.cell(obw, 0).value) + str(sheet_obwod.cell(obw, 1).value)
-            obw_obj = gminy_dict[gmina].add_subunit(name, 'obwod')
+            obwod_name = sheet_obwod.cell(obw, 6).value
+            obw_obj = gminy_dict[gmina].add_subunit(name, 'obwod', full_type='obwód', full_name=obwod_name)
             obw_obj.votes = [int(sheet_obwod.cell(obw, i).value) for i in range(12, 24)]
             obw_obj.statystyki = [int(sheet_obwod.cell(obw,i).value) for i in range(7, 12)]
             toll = 100 * obw_obj.statystyki[1] / obw_obj.statystyki[0]
