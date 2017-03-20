@@ -1,7 +1,5 @@
 TODO:
-- style, css(good display), responsive
-- map
-- selenium testing script
+- selenium testing script, checking correctness
 - tomorrow it should work!
-- html validation
-- add percentage result
+- correct style, footer, header
+- template inheritance

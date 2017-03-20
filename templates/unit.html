@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title> Wybory prezydenckie 2000 </title>
+    <link rel="stylesheet" type="text/css" href="../../styles/style.css">
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+
+        var data = google.visualization.arrayToDataTable(
+            {{ diagram|safe }}
+        );
+
+        var options = {
+          title: 'Wyniki wyborów',
+          sliceVisibilityThreshold: .0
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+
+</head>
+<body>
+    <div>
+        <ul class="topnav">
+            {% for name, link in ancestors %}
+                <li> <a href= {{ root + link }}> {{ name }}</a> </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+
+    <div>
+        <h2>
+            Wyniki wyborów
+        </h2>
+        <table class = "votes">
+            <tr>
+                <th> Kandydat </th>
+                <th> Liczba głosów</th>
+                <th> Procent głosów </th>
+            </tr>
+            {% for cand, votes in res_dict.items() %}
+                <tr>
+                    <td> {{ cand }}  </td>
+                    <td> {{ votes }} </td>
+                    {% if ogolne['Ważne głosy'] != 0 %}
+                         <td> {{ "%.2f" % (100 * votes / ogolne['Ważne głosy'] )  }} </td>
+                    {% else %}
+                        <td> {{ 0.00 }} </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </table>
+
+    </div>
+
+    <div id="piechart" style="width: 900px; height: 500px;">
+
+    </div>
+
+
+    <div>
+        <h2> Ogólne statystyki </h2>
+        <table class = "votes">
+            {% for rubryka, wartosc in ogolne.items() %}
+                {% if rubryka == 'Frekwencja' %}
+                    <tr>
+                        <td> {{ rubryka }} </td>
+                        <td> {{ "%.2f" % wartosc }} </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td> {{ rubryka }} </td>
+                        <td> {{ wartosc }} </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="subunits">
+        <ul>
+            {% for name in subnames %}
+                <li> <a href = {{ root + subunits[name].destination }} > {{ subunits[name].full_type }} {{ subunits[name].full_name }} </a> </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+</body>
+</html>

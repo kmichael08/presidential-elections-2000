@@ -27,7 +27,9 @@ ul.topnav li.right {float: right;}
 .votes {
     font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
     border-collapse: collapse;
-    width: 100%;
+    margin-left : 5%;
+    margin-right: 5%;
+    width: 90%;
 }
 
 .votes td, .votes th {
@@ -45,6 +47,10 @@ ul.topnav li.right {float: right;}
     text-align: left;
     background-color: #4CAF50;
     color: white;
+}
+
+h2 {
+    margin-left: 5%;
 }
 
 .subunits {
@@ -83,7 +89,7 @@ ul.topnav li.right {float: right;}
 .subunits li a.active {background-color: #4CAF50;}
 
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 900px) {
     #piechart {display:none;}
     .subunits {
         -webkit-column-count: 2; /* Chrome, Safari, Opera */

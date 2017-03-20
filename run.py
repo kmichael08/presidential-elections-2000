@@ -1,20 +1,25 @@
+#-*- coding: utf-8 -*-
 from jinja2 import FileSystemLoader, Environment
 from xlrd import open_workbook
 from collections import OrderedDict
 from json import dumps, load
 import re
-
+import locale
 CANDIDATES_NUM = 12
 
 templateLoader = FileSystemLoader( searchpath="templates" )
 
 env = Environment( loader=templateLoader )
 
-TEMPLATE_FILE = "gmina.html"
+TEMPLATE_FILE = "unit.html"
+
+POLAND_TEMPLATE = "polska.html"
 
 ROOT_PATH = '../../'
 
 template = env.get_template( TEMPLATE_FILE )
+
+pol_template = env.get_template( POLAND_TEMPLATE )
 
 sheet = open_workbook('dane/gm-kraj.xls').sheet_by_index(0)
 
@@ -22,8 +27,11 @@ candidates = [sheet.cell(0, i).value for i in range(10, 22)]
 
 rubryki = ['Uprawnieni do głosowania', 'Wydane karty', 'Wyjęto z urny', 'Nieważne głosy', 'Ważne głosy', 'Frekwencja']
 
-class Unit:
+def pol_sorted(data):
+    locale.setlocale(locale.LC_COLLATE, "pl_PL.UTF-8")
+    return sorted(data,  key=locale.strxfrm)
 
+class Unit:
     def __init__(self, name, typ, full_type = None, full_name = None):
         self.subunits = OrderedDict()
         self.votes = [0] * CANDIDATES_NUM
@@ -75,8 +83,14 @@ class Unit:
         self.statystyki[5] = 100 * self.statystyki[1] / self.statystyki[0]
         self.ogolne = OrderedDict(zip(rubryki, self.statystyki))
 
-        outputText = template.render({'res_dict' : self.res_dict, 'ogolne' : self.ogolne, 'subunits' : self.subunits, 'subnames' : sorted(self.subunits.keys()),
-                                      'root' : ROOT_PATH, 'diagram' : self.diagram, 'ancestors' : self.ancestors() })
+
+        if self.typ == 'kraj':
+            rendered_temp = pol_template
+        else:
+            rendered_temp = template
+
+        outputText = rendered_temp.render({'res_dict' : self.res_dict, 'ogolne' : self.ogolne, 'subunits' : self.subunits, 'subnames' : pol_sorted(self.subunits.keys()),
+                                      'enum_subnames' : zip(range(1, 17), pol_sorted(self.subunits.keys())),'root' : ROOT_PATH, 'diagram' : self.diagram, 'ancestors' : self.ancestors() })
 
         with open(self.destination, 'w') as page:
             page.write(outputText)
@@ -96,7 +110,7 @@ gminy_dict = OrderedDict()
 
 """ Add the row from the sheet with units. """
 def add_row(row):
-    okr_num = int(row[0].value)
+    okr_num = str(int(row[0].value))
     gmina = str(row[0].value) + str(row[1].value)
     gmina_name = row[2].value
     powiat = row[3].value
@@ -133,7 +147,7 @@ def generuj_obwody_i_gminy():
         for obw in range(1, sheet_obwod.nrows):
             name = str(sheet_obwod.cell(obw, 1).value) + str(int(sheet_obwod.cell(obw, 4).value))
             gmina = str(sheet_obwod.cell(obw, 0).value) + str(sheet_obwod.cell(obw, 1).value)
-            obwod_name = sheet_obwod.cell(obw, 6).value
+            obwod_name = str(sheet_obwod.cell(obw, 6).value)
             obw_obj = gminy_dict[gmina].add_subunit(name, 'obwod', full_type='obwód', full_name=obwod_name)
             obw_obj.votes = [int(sheet_obwod.cell(obw, i).value) for i in range(12, 24)]
             obw_obj.statystyki = [int(sheet_obwod.cell(obw,i).value) for i in range(7, 12)]
