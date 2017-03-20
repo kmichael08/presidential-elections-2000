@@ -30,6 +30,7 @@ class Unit:
         self.ogolne = OrderedDict()
         self.name = name
         self.typ = typ
+        self.parent = None
 
         if full_type == None:
             self.full_type = typ
@@ -49,6 +50,7 @@ class Unit:
     def add_subunit(self, name, typ, full_type=None, full_name=None):
         if name not in self.subunits:
             self.subunits[name] = Unit(name, typ, full_type, full_name)
+        self.subunits[name].parent = self
         return self.subunits[name]
 
     """ Calculate values based on subunits. """
@@ -74,13 +76,20 @@ class Unit:
         self.ogolne = OrderedDict(zip(rubryki, self.statystyki))
 
         outputText = template.render({'res_dict' : self.res_dict, 'ogolne' : self.ogolne, 'subunits' : self.subunits, 'subnames' : sorted(self.subunits.keys()),
-                                      'root' : ROOT_PATH, 'diagram' : self.diagram, 'description' : str(self.full_type) + ' ' + str(self.full_name) })
+                                      'root' : ROOT_PATH, 'diagram' : self.diagram, 'ancestors' : self.ancestors() })
 
         with open(self.destination, 'w') as page:
             page.write(outputText)
 
 
-polska = Unit('Polska', 'kraj')
+    def ancestors(self):
+        if self.parent == None:
+            return [(str(self.full_type) + ' ' + str(self.full_name), self.destination)]
+        else:
+            return self.parent.ancestors() + [( str(self.full_type) + ' ' + str(self.full_name), self.destination)]
+
+
+polska = Unit('Polska', 'kraj', full_type='')
 okregi_dict = OrderedDict()
 gminy_dict = OrderedDict()
 
@@ -117,7 +126,7 @@ def dfs_print(unit):
 LICZBA_OKREGOW = 68
 
 """ Generate directly pages for obwody. """
-#TODO typy w xls, pilnować nrows + 1?
+#TODO typy w xls
 def generuj_obwody_i_gminy():
     for num in range(1, LICZBA_OKREGOW + 1):
         sheet_obwod = open_workbook('dane/obwody/obw' + ("%02d" % num) + '.xls').sheet_by_index(0)

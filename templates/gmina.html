@@ -28,7 +28,11 @@
 </head>
 <body>
     <div>
-        <h1> {{ description }} </h1>
+        <ul>
+            {% for name, link in ancestors %}
+                <li> <a href= {{ root + link }}> {{ name }}</a> </li>
+            {% endfor %}
+        </ul>
     </div>
 
 

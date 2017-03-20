@@ -1,9 +1,6 @@
 TODO:
-- amend the statistics
-- navigation menu (add parent field, rectify the names of units)
-- order in templates
-- style, css(good display, sorted etc)
+- navigation menu
+- style, css(good display), responsive
 - map
 - selenium testing script
-- amend links, display names, check (ships!!)
 - tomorrow it should work!
