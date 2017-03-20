@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title> Wybory prezydenckie 2000 </title>
+    <link rel="stylesheet" type="text/css" href="../../styles/style.css">
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
       google.charts.load('current', {'packages':['corechart']});
@@ -28,7 +29,7 @@
 </head>
 <body>
     <div>
-        <ul>
+        <ul class="topnav">
             {% for name, link in ancestors %}
                 <li> <a href= {{ root + link }}> {{ name }}</a> </li>
             {% endfor %}
@@ -40,11 +41,18 @@
         <h2>
             Kandydaci na prezydenta
         </h2>
-        <ul>
+        <table class = "votes">
+            <tr>
+                <th> Kandydat </th>
+                <th> Liczba głosów</th>
+            </tr>
             {% for cand, votes in res_dict.items() %}
-                <li> {{ cand }}  {{ votes }}</li>
+                <tr>
+                    <td> {{ cand }}  </td>
+                    <td> {{ votes }} </td>
+                </tr>
             {% endfor %}
-        </ul>
+        </table>
 
     </div>
 
@@ -55,18 +63,24 @@
 
     <div>
         <h2> Ogólne statystyki </h2>
-        <ul>
+        <table class = "votes">
             {% for rubryka, wartosc in ogolne.items() %}
                 {% if rubryka == 'Frekwencja' %}
-                    <li> {{ rubryka }} {{ "%.2f" % wartosc }}</li>
+                    <tr>
+                        <td> {{ rubryka }} </td>
+                        <td> {{ "%.2f" % wartosc }} </td>
+                    </tr>
                 {% else %}
-                <li> {{ rubryka }} {{ wartosc }} </li>
+                    <tr>
+                        <td> {{ rubryka }} </td>
+                        <td> {{ wartosc }} </td>
+                    </tr>
                 {% endif %}
             {% endfor %}
-        </ul>
+        </table>
     </div>
 
-    <div>
+    <div class="subunits">
         <ul>
             {% for name in subnames %}
                 <li> <a href = {{ root + subunits[name].destination }} > {{ subunits[name].full_type }} {{ subunits[name].full_name }} </a> </li>

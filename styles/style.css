@@ -1,0 +1,106 @@
+
+ul.topnav {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+ul.topnav li {float: left;}
+
+ul.topnav li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+ul.topnav li a:hover:not(.active) {background-color: #111;}
+
+ul.topnav li a.active {background-color: #4CAF50;}
+
+ul.topnav li.right {float: right;}
+
+
+.votes {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.votes td, .votes th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.votes tr:nth-child(even){background-color: #f2f2f2;}
+
+.votes tr:hover {background-color: #ddd;}
+
+.votes th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+}
+
+.subunits {
+    margin-top: 30px;
+    margin-bottom : 30px;
+    -webkit-column-count: 3; /* Chrome, Safari, Opera */
+    -moz-column-count: 3; /* Firefox */
+    column-count: 3;
+    -webkit-column-gap: 40px; /* Chrome, Safari, Opera */
+    -moz-column-gap: 40px; /* Firefox */
+    column-gap: 40px;
+    -webkit-column-rule: 1px solid lightblue; /* Chrome, Safari, Opera */
+    -moz-column-rule: 1px solid lightblue; /* Firefox */
+    column-rule: 1px solid lightblue;
+}
+
+.subunits ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    background-color: #333;
+
+}
+
+.subunits li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    page-break-inside: avoid;           /* Theoretically FF 20+ */
+}
+
+.subunits li a:hover:not(.active) {background-color: #111;}
+
+.subunits li a.active {background-color: #4CAF50;}
+
+
+@media screen and (max-width: 800px) {
+    #piechart {display:none;}
+    .subunits {
+        -webkit-column-count: 2; /* Chrome, Safari, Opera */
+        -moz-column-count: 2; /* Firefox */
+         column-count: 2;
+    }
+
+}
+
+
+@media screen and (max-width: 600px){
+    ul.topnav li.right,
+    ul.topnav li {float: none;}
+    .subunits {
+        -webkit-column-count: 1; /* Chrome, Safari, Opera */
+        -moz-column-count: 1; /* Firefox */
+         column-count: 1;
+
+    }
+}

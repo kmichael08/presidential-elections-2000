@@ -1,6 +1,7 @@
 TODO:
-- navigation menu
 - style, css(good display), responsive
 - map
 - selenium testing script
 - tomorrow it should work!
+- html validation
+- add percentage result
