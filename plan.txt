@@ -7,3 +7,5 @@ TODO:
 - style, css(good display, sorted etc)
 - map
 - selenium testing script
+- amend links, display names, check (ships!!)
+- tomorrow it should work!
