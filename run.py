@@ -48,12 +48,15 @@ class Unit:
 
     """ Generate the page for this unit. """
     def generate(self):
-        print(self.destination)
+        #print(self.destination)
         for sub in self.subunits.values():
             sub.generate()
-        self.update()
+        if self.typ not in ['gmina', 'obwod']:
+            self.update()
         self.res_dict = OrderedDict(zip(candidates, self.votes))
-        print(self.statystyki[0], self.statystyki[1])
+        if self.statystyki[0] == 0:
+            print(self.destination)
+            print(self.statystyki)
         self.statystyki[5] = 100 * self.statystyki[1] / self.statystyki[0]
         self.ogolne = OrderedDict(zip(rubryki, self.statystyki))
         outputText = template.render({'res_dict' : self.res_dict, 'ogolne' : self.ogolne, 'subunits' : self.subunits, 'root' : ROOT_PATH })
@@ -69,7 +72,7 @@ gminy_dict = OrderedDict()
 """ Add the row from the sheet with units. """
 def add_row(row):
     okr_num = int(row[0].value)
-    gmina = row[2].value
+    gmina = str(row[0].value) + str(row[1].value)
     powiat = row[3].value
     gminy_dict[gmina] = okregi_dict[okr_num].add_subunit(powiat, 'powiat').add_subunit(gmina, 'gmina')
 
@@ -98,21 +101,28 @@ LICZBA_OKREGOW = 68
 
 """ Generate directly pages for obwody. """
 #TODO typy w xls, pilnować nrows + 1?
-def generuj_obwody():
+def generuj_obwody_i_gminy():
     for num in range(1, LICZBA_OKREGOW + 1):
         sheet_obwod = open_workbook('dane/obwody/obw' + ("%02d" % num) + '.xls').sheet_by_index(0)
         for obw in range(1, sheet_obwod.nrows):
             name = str(sheet_obwod.cell(obw, 1).value) + str(int(sheet_obwod.cell(obw, 4).value))
-            gmina = sheet_obwod.cell(obw, 2).value
+            gmina = str(sheet_obwod.cell(obw, 0).value) + str(sheet_obwod.cell(obw, 1).value)
             obw_obj = gminy_dict[gmina].add_subunit(name, 'obwod')
             obw_obj.votes = [int(sheet_obwod.cell(obw, i).value) for i in range(12, 24)]
             obw_obj.statystyki = [int(sheet_obwod.cell(obw,i).value) for i in range(7, 12)]
             toll = 100 * obw_obj.statystyki[1] / obw_obj.statystyki[0]
             obw_obj.statystyki.append(toll)
 
+    for num in range(1, sheet.nrows):
+        gmina = str(sheet.cell(num, 0).value) + str(sheet.cell(num, 1).value)
+        gmina_obj = gminy_dict[gmina]
+        gmina_obj.votes =  [int(sheet.cell(num, i).value) for i in range(10, 22)]
+        gmina_obj.statystyki = [int(sheet.cell(num, i).value) for i in range(5, 10)]
+        toll = 100 * gmina_obj.statystyki[1] / gmina_obj.statystyki[0]
+        gmina_obj.statystyki.append(toll)
 
 
 if __name__ == "__main__":
     make_tree()
-    generuj_obwody()
+    generuj_obwody_i_gminy()
     polska.generate()

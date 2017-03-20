@@ -53,7 +53,11 @@
         <h2> Ogólne statystyki </h2>
         <ul>
             {% for rubryka, wartosc in ogolne.items() %}
+                {% if rubryka == 'Frekwencja' %}
+                    <li> {{ rubryka }} {{ "%.2f" % wartosc }}</li>
+                {% else %}
                 <li> {{ rubryka }} {{ wartosc }} </li>
+                {% endif %}
             {% endfor %}
         </ul>
     </div>

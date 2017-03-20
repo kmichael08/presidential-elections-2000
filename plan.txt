@@ -4,6 +4,6 @@ TODO:
 - navigation menu (add parent field, rectify the names of units)
 - diagrams
 - order in templates
-- style, css
+- style, css(good display, sorted etc)
 - map
 - selenium testing script
