@@ -1,109 +1,18 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <title> Wybory prezydenckie 2000 </title>
-    <link rel="stylesheet" type="text/css" href="../../styles/style.css">
+{% extends "unit.html" %}
 
-    <link rel="stylesheet" type="text/css" media="screen,projection" href="../../styles/pl-mapa-500px.css" />
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
-    <script type="text/javascript" src="pl-mapa.js"></script>
+    {% block importy %}
+        <link rel="stylesheet" type="text/css" media="screen,projection" href="../../styles/pl-mapa-500px.css" />
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
+        <script type="text/javascript" src="pl-mapa.js"></script>
+    {% endblock %}
 
 
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript">
-      google.charts.load('current', {'packages':['corechart']});
-      google.charts.setOnLoadCallback(drawChart);
-
-      function drawChart() {
-
-        var data = google.visualization.arrayToDataTable(
-            {{ diagram|safe }}
-        );
-
-        var options = {
-          title: 'Wyniki wyborów',
-          sliceVisibilityThreshold: .0
-        };
-
-        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
-
-        chart.draw(data, options);
-      }
-    </script>
-
-</head>
-<body>
-    <div>
-        <ul class="topnav">
-            {% for name, link in ancestors %}
-                <li> <a href= {{ root + link }}> {{ name }}</a> </li>
-            {% endfor %}
-        </ul>
-    </div>
-
-
-    <div>
-        <h2>
-            Kandydaci na prezydenta
-        </h2>
-        <table class = "votes">
-            <tr>
-                <th> Kandydat </th>
-                <th> Liczba głosów</th>
-            </tr>
-            {% for cand, votes in res_dict.items() %}
-                <tr>
-                    <td> {{ cand }}  </td>
-                    <td> {{ votes }} </td>
-                </tr>
-            {% endfor %}
-        </table>
-
-    </div>
-
-    <div id="piechart" style="width: 900px; height: 500px;">
-
-    </div>
-
-
-    <div>
-        <h2> Ogólne statystyki </h2>
-        <table class = "votes">
-            {% for rubryka, wartosc in ogolne.items() %}
-                {% if rubryka == 'Frekwencja' %}
-                    <tr>
-                        <td> {{ rubryka }} </td>
-                        <td> {{ "%.2f" % wartosc }} </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td> {{ rubryka }} </td>
-                        <td> {{ wartosc }} </td>
-                    </tr>
-                {% endif %}
-            {% endfor %}
-        </table>
-    </div>
-
-
-   <div id="map-pl">
-  <ul id="polska">
-      {% for ind, name in enum_subnames %}
-       <li id = "pl{{ind}}">  <a href = {{ root + subunits[name].destination }} > {{ subunits[name].full_type }} {{ subunits[name].full_name }} </a> </li>
-
-      {% endfor %}
-  </ul>
- </div>
-
-
-    <div class="subunits">
-        <ul>
-            {% for name in subnames %}
-                <li> <a href = {{ root + subunits[name].destination }} > {{ subunits[name].full_type }} {{ subunits[name].full_name }} </a> </li>
-            {% endfor %}
-        </ul>
-    </div>
-
-</body>
-</html>
+    {% block mapa %}
+       <div id="map-pl">
+            <ul id="polska">
+                {% for ind, name in enum_subnames %}
+                     <li id = "pl{{ind}}">  <a href = {{ root + subunits[name].destination }} > {{ subunits[name].full_type }} {{ subunits[name].full_name }} </a> </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endblock %}

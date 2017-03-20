@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title> Wybory prezydenckie 2000 </title>
+
+    {% block importy %}
+
+    {% endblock %}
+
     <link rel="stylesheet" type="text/css" href="../../styles/style.css">
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -86,6 +91,10 @@
             {% endfor %}
         </table>
     </div>
+
+    {% block mapa %}
+
+    {% endblock %}
 
     <div class="subunits">
         <ul>
