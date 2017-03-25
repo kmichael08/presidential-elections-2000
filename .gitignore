@@ -1,0 +1,12 @@
+#pycharm files
+.idea/
+
+#downloaded page
+dane/prezydent2000.pkw.gov.pl
+
+#gecko
+geckodriver.log
+
+#pages
+pages/
+
