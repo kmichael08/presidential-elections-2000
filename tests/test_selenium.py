@@ -5,6 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from pyvirtualdisplay import Display
 from collections import deque
+from selenium.common.exceptions import WebDriverException
 
 display = Display(visible=0, size=(800, 600))
 display.start()
@@ -18,21 +19,24 @@ pages = deque([init_page])
 def bfs():
     while len(pages) != 0:
         url = pages.popleft()
-        driver.get(url)
-        home_page = driver.find_element_by_tag_name('a')
-        present_unit = driver.find_element_by_xpath("//ul[@class='topnav']/li[last()]/a")
-        print(present_unit.text + ': ')
-        if home_page.get_attribute('href') == init_page:
-            print('     ma poprawny link do strony głównej')
-        else:
-            print('     brak linku do strony głównej!!!')
-        if driver.find_element_by_class_name('votes') == []:
-            print('     brak wyników głosowania!!!')
-        else:
-            print('     poprawne wyniki głosowania')
-        sub_pages = driver.find_elements_by_xpath("//div[@class='subunits']/ul/li/a")
-        for sub_page in sub_pages:
-            pages.append(sub_page.get_attribute('href'))
+        try:
+            driver.get(url)
+            home_page = driver.find_element_by_tag_name('a')
+            present_unit = driver.find_element_by_xpath("//ul[@class='topnav']/li[last()]/a")
+            print(present_unit.text + ': ')
+            if home_page.get_attribute('href') == init_page:
+                print('     ma poprawny link do strony głównej')
+            else:
+                print('     brak linku do strony głównej!!!')
+            if driver.find_elements_by_class_name('votes') == []:
+                print('     brak wyników głosowania!!!')
+            else:
+                print('     poprawne wyniki głosowania')
+            sub_pages = driver.find_elements_by_xpath("//div[@class='subunits']/ul/li/a")
+            for sub_page in sub_pages:
+                pages.append(sub_page.get_attribute('href'))
+        except WebDriverException:
+            print('We have a broken link!!!')
 
 """
     driver.get(url)
