@@ -114,7 +114,7 @@ gminy_dict = OrderedDict()
 """ Add the row from the sheet with units. """
 def add_row(row):
     okr_num = str(int(row[0].value))
-    gmina = str(row[0].value) + str(row[1].value)
+    gmina = str(int(row[0].value)) + str(row[1].value)
     gmina_name = row[2].value
     powiat = row[3].value
     gminy_dict[gmina] = okregi_dict[okr_num].add_subunit(powiat + '-okr-' + okr_num, 'powiat', full_name=powiat).add_subunit(gmina, 'gmina', full_name=gmina_name)
@@ -149,7 +149,7 @@ def generuj_obwody_i_gminy():
         sheet_obwod = open_workbook('dane/obwody/obw' + ("%02d" % num) + '.xls').sheet_by_index(0)
         for obw in range(1, sheet_obwod.nrows):
             name = str(sheet_obwod.cell(obw, 1).value) + str(int(sheet_obwod.cell(obw, 4).value))
-            gmina = str(sheet_obwod.cell(obw, 0).value) + str(sheet_obwod.cell(obw, 1).value)
+            gmina = str(int(sheet_obwod.cell(obw, 0).value)) + str(sheet_obwod.cell(obw, 1).value)
             obwod_name = str(sheet_obwod.cell(obw, 6).value)
             obw_obj = gminy_dict[gmina].add_subunit(name, 'obwod', full_type='obwód', full_name=obwod_name)
             obw_obj.votes = [int(sheet_obwod.cell(obw, i).value) for i in range(12, 24)]
@@ -158,7 +158,7 @@ def generuj_obwody_i_gminy():
             obw_obj.statystyki.append(toll)
 
     for num in range(1, sheet.nrows):
-        gmina = str(sheet.cell(num, 0).value) + str(sheet.cell(num, 1).value)
+        gmina = str(int(sheet.cell(num, 0).value)) + str(sheet.cell(num, 1).value)
         gmina_obj = gminy_dict[gmina]
         gmina_obj.votes =  [int(sheet.cell(num, i).value) for i in range(10, 22)]
         gmina_obj.statystyki = [int(sheet.cell(num, i).value) for i in range(5, 10)]
