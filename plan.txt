@@ -1,5 +1,2 @@
 TODO:
 - selenium testing script, checking correctness
-- tomorrow it should work!
-- correct style, footer, header
-- template inheritance

@@ -100,7 +100,10 @@ class Unit:
         if self.parent == None:
             return [(str(self.full_type) + ' ' + str(self.full_name), self.destination)]
         else:
-            return self.parent.ancestors() + [( str(self.full_type) + ' ' + str(self.full_name), self.destination)]
+            not_units = ['Statki morskie', 'Zagranica']
+            typ = '' if (self.full_name in not_units or (self.parent.full_name in not_units and self.full_type != 'obwod')) else str(self.full_type)
+
+            return self.parent.ancestors() + [( typ + ' ' + str(self.full_name), self.destination)]
 
 
 polska = Unit('Polska', 'kraj', full_type='')
@@ -114,7 +117,7 @@ def add_row(row):
     gmina = str(row[0].value) + str(row[1].value)
     gmina_name = row[2].value
     powiat = row[3].value
-    gminy_dict[gmina] = okregi_dict[okr_num].add_subunit(powiat, 'powiat').add_subunit(gmina, 'gmina', full_name=gmina_name)
+    gminy_dict[gmina] = okregi_dict[okr_num].add_subunit(powiat + '-okr-' + okr_num, 'powiat', full_name=powiat).add_subunit(gmina, 'gmina', full_name=gmina_name)
 
 """ Generate the tree of all units. """
 def make_tree():

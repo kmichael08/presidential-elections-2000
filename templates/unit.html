@@ -99,7 +99,11 @@
     <div class="subunits">
         <ul>
             {% for name in subnames %}
-                <li> <a href = {{ root + subunits[name].destination }} > {{ subunits[name].full_type }} {{ subunits[name].full_name }} </a> </li>
+                {% if subunits[name].full_name in ['Statki morskie', 'Zagranica'] %}
+                    <li> <a href = {{ root + subunits[name].destination }} > {{ subunits[name].full_name }} </a> </li>
+                {% else %}
+                    <li> <a href = {{ root + subunits[name].destination }} > {{ subunits[name].full_type }} {{ subunits[name].full_name }} </a> </li>
+                {% endif %}
             {% endfor %}
         </ul>
     </div>
